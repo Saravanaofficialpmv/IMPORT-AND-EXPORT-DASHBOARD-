@@ -6,9 +6,6 @@ export default withAuth(
         const token = req.nextauth.token;
         const pathname = req.nextUrl.pathname;
 
-        // Log for debugging
-        console.log("[v0] Middleware - Path:", pathname, "Role:", token?.role);
-
         // Public routes
         if (pathname === "/login" || pathname === "/signup" || pathname === "/") {
             return NextResponse.next();
@@ -18,7 +15,6 @@ export default withAuth(
         if (pathname.startsWith("/dashboard")) {
             // Check if user has role
             if (!token?.role) {
-                console.log("[v0] No role found, redirecting to login");
                 return NextResponse.redirect(new URL("/login", req.url));
             }
 

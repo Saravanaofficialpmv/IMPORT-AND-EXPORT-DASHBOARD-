@@ -11,7 +11,6 @@ export async function getUserByEmail(email: string) {
     .single();
 
   if (error) {
-    console.error("[v0] getUserByEmail error:", error.message);
     return null;
   }
   return data;
@@ -27,7 +26,6 @@ export async function getUserById(id: string) {
     .single();
 
   if (error) {
-    console.error("[v0] getUserById error:", error.message);
     return null;
   }
   return data;
@@ -59,7 +57,6 @@ export async function createUser(
     .single();
 
   if (error) {
-    console.error("[v0] createUser error:", error.message);
     return null;
   }
   return data;

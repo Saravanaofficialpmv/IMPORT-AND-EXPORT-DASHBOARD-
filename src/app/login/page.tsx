@@ -48,21 +48,9 @@ export default function LoginPage() {
             setError(result.error);
             setLoading(false);
         } else {
-            // Wait for session to be established
-            setTimeout(async () => {
-                try {
-                    const res = await fetch("/api/auth/session");
-                    const sessionData = await res.json();
-                    
-                    if (sessionData?.user?.role) {
-                        handleRedirect(sessionData.user.role);
-                    } else {
-                        router.push("/dashboard");
-                    }
-                } catch (err) {
-                    router.push("/dashboard");
-                }
-            }, 300);
+            // Redirect to dashboard - middleware will handle role-based routing
+            router.push("/dashboard");
+            router.refresh();
         }
     };
 
@@ -82,21 +70,9 @@ export default function LoginPage() {
             setError(result.error);
             setLoading(false);
         } else {
-            // Wait for session to be established
-            setTimeout(async () => {
-                try {
-                    const res = await fetch("/api/auth/session");
-                    const sessionData = await res.json();
-                    
-                    if (sessionData?.user?.role) {
-                        handleRedirect(sessionData.user.role);
-                    } else {
-                        router.push("/dashboard");
-                    }
-                } catch (err) {
-                    router.push("/dashboard");
-                }
-            }, 300);
+            // Redirect to dashboard - middleware will handle role-based routing
+            router.push("/dashboard");
+            router.refresh();
         }
     };
 
