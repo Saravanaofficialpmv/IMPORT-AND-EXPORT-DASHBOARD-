@@ -60,8 +60,9 @@ export async function POST(req: NextRequest) {
             .single();
 
         if (userError) {
+            console.error("[v0] User insert error:", userError);
             return NextResponse.json(
-                { error: "Failed to create account. Please try again." },
+                { error: userError.message || "Failed to create account. Please try again." },
                 { status: 500 }
             );
         }
@@ -79,8 +80,10 @@ export async function POST(req: NextRequest) {
             { status: 201 }
         );
     } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : "Unknown error";
+        console.error("[v0] Signup error:", errorMsg);
         return NextResponse.json(
-            { error: "An error occurred during signup" },
+            { error: "An error occurred during signup: " + errorMsg },
             { status: 500 }
         );
     }

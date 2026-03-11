@@ -76,7 +76,8 @@ export default function SignUpPage() {
                 router.push("/login");
             }, 2000);
         } catch (err) {
-            setError("An error occurred. Please try again.");
+            const errorMsg = err instanceof Error ? err.message : "An error occurred. Please try again.";
+            setError(errorMsg);
             setLoading(false);
         }
     };

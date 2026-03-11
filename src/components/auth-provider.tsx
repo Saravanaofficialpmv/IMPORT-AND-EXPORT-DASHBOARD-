@@ -9,10 +9,11 @@ export default function AuthProvider({
 }) {
     return (
         <SessionProvider
-            // Use relative basePath so it always matches the current host
             basePath="/api/auth"
             refetchInterval={0}
             refetchOnWindowFocus={false}
+            // Handle null session responses gracefully
+            skipCSRFCheck={true}
         >
             {children}
         </SessionProvider>
