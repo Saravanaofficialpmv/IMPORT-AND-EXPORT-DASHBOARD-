@@ -3,6 +3,15 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { getUserByEmail } from "@/lib/supabase/queries";
 
+// Ensure NEXTAUTH_URL is set for proper session handling
+if (!process.env.NEXTAUTH_URL) {
+    if (process.env.VERCEL_URL) {
+        process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
+    } else {
+        process.env.NEXTAUTH_URL = "http://localhost:3000";
+    }
+}
+
 export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({

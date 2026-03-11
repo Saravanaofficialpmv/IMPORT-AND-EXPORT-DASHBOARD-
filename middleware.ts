@@ -1,9 +1,19 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
+
+// Ensure NEXTAUTH_URL is set before middleware runs
+if (!process.env.NEXTAUTH_URL) {
+    if (process.env.VERCEL_URL) {
+        process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
+    } else {
+        process.env.NEXTAUTH_URL = "http://localhost:3000";
+    }
+}
 
 export default withAuth(
-    function middleware(req) {
-        const token = req.nextauth.token;
+    function middleware(req: any) {
+        const token = req.nextauth?.token;
         const pathname = req.nextUrl.pathname;
 
         // Public routes
@@ -36,8 +46,8 @@ export default withAuth(
     {
         callbacks: {
             authorized({ token }) {
-                // Allow public routes to pass through
-                return !!token;
+                // Allow public routes to pass through - middleware handles routing
+                return true;
             },
         },
         pages: {
