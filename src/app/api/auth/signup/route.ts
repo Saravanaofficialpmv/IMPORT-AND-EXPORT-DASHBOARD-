@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import bcrypt from "bcryptjs";
+import { v4 as uuidv4 } from "uuid";
 
 export async function POST(req: NextRequest) {
     try {
@@ -42,11 +43,15 @@ export async function POST(req: NextRequest) {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Generate UUID for the user
+        const userId = uuidv4();
+
         // Create user using admin client (bypasses RLS)
         const { data: newUser, error: userError } = await supabase
             .from("users")
             .insert([
                 {
+                    id: userId,
                     email,
                     password_hash: hashedPassword,
                     name,
