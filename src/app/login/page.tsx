@@ -47,10 +47,22 @@ export default function LoginPage() {
         if (result?.error) {
             setError(result.error);
             setLoading(false);
-        } else {
-            // Redirect to dashboard - middleware will handle role-based routing
-            router.push("/dashboard");
-            router.refresh();
+        } else if (result?.ok) {
+            // Get the session to determine role and redirect accordingly
+            try {
+                const sessionResponse = await fetch("/api/auth/session");
+                const sessionData = await sessionResponse.json();
+                
+                if (sessionData?.user?.role) {
+                    handleRedirect(sessionData.user.role);
+                } else {
+                    // Fallback redirect
+                    router.push("/dashboard");
+                }
+            } catch (err) {
+                // If session fetch fails, still redirect - middleware will handle it
+                router.push("/dashboard");
+            }
         }
     };
 
@@ -69,10 +81,22 @@ export default function LoginPage() {
         if (result?.error) {
             setError(result.error);
             setLoading(false);
-        } else {
-            // Redirect to dashboard - middleware will handle role-based routing
-            router.push("/dashboard");
-            router.refresh();
+        } else if (result?.ok) {
+            // Get the session to determine role and redirect accordingly
+            try {
+                const sessionResponse = await fetch("/api/auth/session");
+                const sessionData = await sessionResponse.json();
+                
+                if (sessionData?.user?.role) {
+                    handleRedirect(sessionData.user.role);
+                } else {
+                    // Fallback redirect
+                    router.push("/dashboard");
+                }
+            } catch (err) {
+                // If session fetch fails, still redirect - middleware will handle it
+                router.push("/dashboard");
+            }
         }
     };
 
