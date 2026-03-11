@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,24 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
+    const { data: session } = useSession();
+
+    const handleRedirect = (userRole: string) => {
+        console.log("[v0] Redirecting user with role:", userRole);
+        switch (userRole?.toLowerCase()) {
+            case "admin":
+                router.push("/dashboard");
+                break;
+            case "manager":
+                router.push("/dashboard/vehicles");
+                break;
+            case "driver":
+                router.push("/dashboard/tracking");
+                break;
+            default:
+                router.push("/dashboard");
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,10 +46,24 @@ export default function LoginPage() {
         });
 
         if (result?.error) {
+            console.log("[v0] Sign in error:", result.error);
             setError(result.error);
             setLoading(false);
         } else {
-            router.push("/dashboard");
+            console.log("[v0] Sign in successful, fetching session...");
+            // Wait a moment for the session to be set
+            setTimeout(async () => {
+                // Refresh to get the updated session
+                const res = await fetch("/api/auth/session");
+                const sessionData = await res.json();
+                console.log("[v0] Session data:", sessionData);
+                
+                if (sessionData?.user?.role) {
+                    handleRedirect(sessionData.user.role);
+                } else {
+                    router.push("/dashboard");
+                }
+            }, 500);
         }
     };
 
@@ -48,10 +80,23 @@ export default function LoginPage() {
         });
 
         if (result?.error) {
+            console.log("[v0] Demo sign in error:", result.error);
             setError(result.error);
             setLoading(false);
         } else {
-            router.push("/dashboard");
+            console.log("[v0] Demo sign in successful");
+            // Wait a moment for the session to be set
+            setTimeout(async () => {
+                const res = await fetch("/api/auth/session");
+                const sessionData = await res.json();
+                console.log("[v0] Session data:", sessionData);
+                
+                if (sessionData?.user?.role) {
+                    handleRedirect(sessionData.user.role);
+                } else {
+                    router.push("/dashboard");
+                }
+            }, 500);
         }
     };
 
