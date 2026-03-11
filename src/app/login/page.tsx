@@ -254,11 +254,15 @@ export default function LoginPage() {
 
                         {/* Footer */}
                         <div className="mt-8 pt-6 border-t border-slate-800">
-                            <p className="text-xs text-slate-500 text-center">
+                            <p className="text-xs text-slate-500 text-center mb-4">
                                 By signing in, you agree to our{" "}
                                 <a href="#" className="text-blue-400 hover:text-blue-300">Terms of Service</a>
                                 {" "}and{" "}
                                 <a href="#" className="text-blue-400 hover:text-blue-300">Privacy Policy</a>
+                            </p>
+                            <p className="text-xs text-slate-500 text-center">
+                                Don't have an account?{" "}
+                                <a href="/signup" className="text-blue-400 hover:text-blue-300 font-semibold">Create one now</a>
                             </p>
                         </div>
                     </div>
