@@ -1,43 +1,34 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
     try {
-        const vehicles = await prisma.vehicle.findMany({
-            include: {
-                locations: {
-                    orderBy: { timestamp: "desc" },
-                    take: 1,
-                },
-                trips: {
-                    where: { status: "ACTIVE" },
-                    take: 1,
-                    select: {
-                        id: true,
-                        origin: true,
-                        destination: true,
-                        cargo: true,
-                        routeTaken: true,
-                        driver: { select: { name: true } },
-                    },
-                },
-            },
-        });
+        const supabase = await createClient();
+        const { data: vehicles, error } = await supabase.from("vehicles").select("*");
 
-        const trackingData = vehicles
-            .filter((v) => v.locations.length > 0)
-            .map((v) => ({
+        if (error) throw error;
+
+        const { data: locations, error: locError } = await supabase
+            .from("vehicle_locations")
+            .select("*")
+            .order("timestamp", { ascending: false });
+
+        if (locError) throw locError;
+
+        const trackingData = vehicles.map((v) => {
+            const latestLocation = locations.find((l) => l.vehicle_id === v.id);
+            return {
                 id: v.id,
-                vehicleNumber: v.vehicleNumber,
+                vehicleNumber: v.vehicle_number,
                 status: v.status,
-                lat: v.locations[0].lat,
-                lng: v.locations[0].lng,
-                speed: v.locations[0].speed,
-                heading: v.locations[0].heading,
-                lastUpdate: v.locations[0].timestamp,
-                activeTrip: v.trips[0] || null,
-                driverName: v.driverName,
-            }));
+                lat: latestLocation?.lat || 0,
+                lng: latestLocation?.lng || 0,
+                speed: latestLocation?.speed || 0,
+                heading: latestLocation?.heading || 0,
+                lastUpdate: latestLocation?.timestamp || null,
+                driverName: v.driver_name,
+            };
+        });
 
         return NextResponse.json(trackingData);
     } catch (error) {

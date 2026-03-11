@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const supabase = await createClient();
         const { id } = await params;
         const body = await req.json();
 
@@ -11,22 +12,25 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         if (body.status) {
             updateData.status = body.status;
             if (body.status === "ACTIVE") {
-                updateData.startTime = new Date();
+                updateData.start_time = new Date().toISOString();
             }
             if (body.status === "COMPLETED") {
-                updateData.endTime = new Date();
+                updateData.end_time = new Date().toISOString();
             }
         }
 
         if (body.routeTaken) {
-            updateData.routeTaken = JSON.stringify(body.routeTaken);
+            updateData.route_taken = JSON.stringify(body.routeTaken);
         }
 
-        const trip = await prisma.trip.update({
-            where: { id },
-            data: updateData,
-        });
+        const { data: trip, error } = await supabase
+            .from("trips")
+            .update(updateData)
+            .eq("id", id)
+            .select()
+            .single();
 
+        if (error) throw error;
         return NextResponse.json(trip);
     } catch (error) {
         console.error("Trip PUT error:", error);

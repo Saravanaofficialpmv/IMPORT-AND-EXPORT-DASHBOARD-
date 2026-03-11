@@ -1,7 +1,16 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import prisma from "@/lib/prisma";
+import { getUserByEmail } from "@/lib/supabase/queries";
+
+// Ensure NEXTAUTH_URL is set for proper session handling
+if (!process.env.NEXTAUTH_URL) {
+    if (process.env.VERCEL_URL) {
+        process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
+    } else {
+        process.env.NEXTAUTH_URL = "http://localhost:3000";
+    }
+}
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -16,15 +25,13 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Please provide email and password");
                 }
 
-                const user = await prisma.user.findUnique({
-                    where: { email: credentials.email },
-                });
+                const user = await getUserByEmail(credentials.email);
 
                 if (!user) {
                     throw new Error("No user found with this email");
                 }
 
-                const isValid = await bcrypt.compare(credentials.password, user.password);
+                const isValid = await bcrypt.compare(credentials.password, user.password_hash);
 
                 if (!isValid) {
                     throw new Error("Invalid password");
@@ -63,4 +70,5 @@ export const authOptions: NextAuthOptions = {
         signIn: "/login",
     },
     secret: process.env.NEXTAUTH_SECRET || "super-secret-key-change-in-production",
+    trustHost: true,
 };
