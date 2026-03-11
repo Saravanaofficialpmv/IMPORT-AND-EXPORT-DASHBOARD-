@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("No user found with this email");
                 }
 
-                const isValid = await bcrypt.compare(credentials.password, user.password);
+                const isValid = await bcrypt.compare(credentials.password, user.password_hash);
 
                 if (!isValid) {
                     throw new Error("Invalid password");
@@ -61,4 +61,5 @@ export const authOptions: NextAuthOptions = {
         signIn: "/login",
     },
     secret: process.env.NEXTAUTH_SECRET || "super-secret-key-change-in-production",
+    trustHost: true,
 };
