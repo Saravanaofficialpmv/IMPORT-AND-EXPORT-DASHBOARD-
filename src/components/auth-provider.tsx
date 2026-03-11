@@ -7,5 +7,14 @@ export default function AuthProvider({
 }: {
     children: React.ReactNode;
 }) {
-    return <SessionProvider>{children}</SessionProvider>;
+    return (
+        <SessionProvider
+            // Use relative basePath so it always matches the current host
+            basePath="/api/auth"
+            refetchInterval={0}
+            refetchOnWindowFocus={false}
+        >
+            {children}
+        </SessionProvider>
+    );
 }
