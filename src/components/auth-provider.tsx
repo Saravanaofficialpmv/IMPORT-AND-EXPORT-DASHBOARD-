@@ -12,8 +12,6 @@ export default function AuthProvider({
             basePath="/api/auth"
             refetchInterval={0}
             refetchOnWindowFocus={false}
-            // Handle null session responses gracefully
-            skipCSRFCheck={true}
         >
             {children}
         </SessionProvider>
