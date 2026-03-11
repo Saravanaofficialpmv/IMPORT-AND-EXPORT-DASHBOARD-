@@ -1,0 +1,86 @@
+{
+  "vehicles": [
+    {
+      "id": "1",
+      "vehicle_number": "TN-01-AB-1234",
+      "driver_name": "John Doe",
+      "driver_phone": "9876543210",
+      "permit_id": "PER-001",
+      "status": "ACTIVE",
+      "created_at": "2026-03-11T06:51:24.027Z"
+    },
+    {
+      "id": "2",
+      "vehicle_number": "KA-05-CD-5678",
+      "driver_name": "Jane Smith",
+      "driver_phone": "9876543211",
+      "permit_id": "PER-002",
+      "status": "IN_TRANSIT",
+      "created_at": "2026-03-11T06:51:24.027Z"
+    },
+    {
+      "vehicle_number": "123",
+      "driver_name": "saran",
+      "driver_phone": "908050701",
+      "permit_id": "ewew",
+      "status": "ACTIVE",
+      "manager_id": "1",
+      "id": "53c58808-2805-4bf9-82ce-bcdba01b8c6e",
+      "created_at": "2026-03-11T06:51:24.031Z"
+    }
+  ],
+  "trips": [
+    {
+      "id": "1",
+      "vehicle_id": "2",
+      "origin": "Chennai Port",
+      "destination": "Bangalore Hub",
+      "status": "ACTIVE",
+      "start_time": "2026-03-11T06:51:24.027Z",
+      "created_at": "2026-03-11T06:51:24.027Z"
+    }
+  ],
+  "alerts": [
+    {
+      "id": "1",
+      "type": "ROUTE_DEVIATION",
+      "message": "Vehicle KA-05-CD-5678 deviated from assigned route.",
+      "severity": "WARNING",
+      "resolved": false,
+      "vehicle_id": "2",
+      "created_at": "2026-03-11T06:51:24.027Z"
+    },
+    {
+      "id": "2",
+      "type": "SPEEDING",
+      "message": "Vehicle TN-01-AB-1234 exceeded limit by 15mph.",
+      "severity": "INFO",
+      "resolved": false,
+      "vehicle_id": "1",
+      "created_at": "2026-03-11T06:51:24.027Z"
+    }
+  ],
+  "locations": [
+    {
+      "vehicle_id": "1",
+      "lat": 13.0827,
+      "lng": 80.2707,
+      "speed": 45,
+      "timestamp": "2026-03-11T06:51:24.027Z"
+    },
+    {
+      "vehicle_id": "2",
+      "lat": 12.9716,
+      "lng": 77.5946,
+      "speed": 60,
+      "timestamp": "2026-03-11T06:51:24.027Z"
+    },
+    {
+      "vehicle_id": "3",
+      "lat": 19.076,
+      "lng": 72.8777,
+      "speed": 0,
+      "timestamp": "2026-03-11T06:51:24.027Z"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+prisma/
+.env.local
+scripts/
+.git/
+node_modules/
+.next/
+.turbo/
