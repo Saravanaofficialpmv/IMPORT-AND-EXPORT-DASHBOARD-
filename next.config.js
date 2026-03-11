@@ -13,13 +13,8 @@ const nextConfig = {
     // ESLint warnings won't block the build
     ignoreDuringBuilds: false,
   },
-  // Exclude prisma from the build
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals.push('prisma');
-    }
-    return config;
-  },
+  // Configure Turbopack (Next.js 16 default bundler)
+  turbopack: {},
 };
 
 module.exports = nextConfig;
