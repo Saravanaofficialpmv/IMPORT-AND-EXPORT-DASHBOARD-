@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { signIn, useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +15,18 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
     const { data: session } = useSession();
+
+    // Load saved credentials from localStorage on mount
+    useEffect(() => {
+        try {
+            const savedEmail = localStorage.getItem("login_email");
+            const savedPassword = localStorage.getItem("login_password");
+            if (savedEmail) setEmail(savedEmail);
+            if (savedPassword) setPassword(savedPassword);
+        } catch (err) {
+            // localStorage might not be available in some environments
+        }
+    }, []);
 
     const handleRedirect = (userRole: string) => {
         switch (userRole?.toLowerCase()) {
@@ -37,6 +48,14 @@ export default function LoginPage() {
         e.preventDefault();
         setLoading(true);
         setError("");
+
+        // Save credentials to localStorage for testing
+        try {
+            localStorage.setItem("login_email", email);
+            localStorage.setItem("login_password", password);
+        } catch (err) {
+            // localStorage might not be available
+        }
 
         const result = await signIn("credentials", {
             email,
@@ -71,6 +90,14 @@ export default function LoginPage() {
         setPassword("password123");
         setLoading(true);
         setError("");
+
+        // Save demo credentials to localStorage for testing
+        try {
+            localStorage.setItem("login_email", demoEmail);
+            localStorage.setItem("login_password", "password123");
+        } catch (err) {
+            // localStorage might not be available
+        }
 
         const result = await signIn("credentials", {
             email: demoEmail,
