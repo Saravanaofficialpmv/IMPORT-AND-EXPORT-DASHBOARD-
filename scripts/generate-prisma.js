@@ -1,39 +1,52 @@
 #!/usr/bin/env node
 
-/**
- * Prisma Client Generation Script
- * This script generates the Prisma Client from the schema.prisma file
- */
-
-const { exec } = require('child_process');
+const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-const projectRoot = path.join(__dirname, '..');
-const prismaPath = path.join(projectRoot, 'prisma', 'schema.prisma');
+console.log('[v0] Process CWD:', process.cwd());
+console.log('[v0] __dirname:', __dirname);
+console.log('[v0] __filename:', __filename);
 
-console.log('[v0] Starting Prisma client generation...');
-console.log('[v0] Project root:', projectRoot);
-console.log('[v0] Schema path:', prismaPath);
+// Try different possible paths
+const possiblePaths = [
+  '/vercel/share/v0-project',
+  '/vercel/share/v0-next-shadcn',
+  process.cwd(),
+  path.dirname(__dirname),
+];
 
-// Check if schema exists
-if (!fs.existsSync(prismaPath)) {
-  console.error('[v0] ERROR: Prisma schema not found at', prismaPath);
+let projectRoot = null;
+
+for (const p of possiblePaths) {
+  const schemaPath = path.join(p, 'prisma', 'schema.prisma');
+  console.log('[v0] Checking:', schemaPath);
+  if (fs.existsSync(schemaPath)) {
+    projectRoot = p;
+    console.log('[v0] ✓ Found schema at:', p);
+    break;
+  }
+}
+
+if (!projectRoot) {
+  console.error('[v0] ERROR: Could not find prisma schema in any known location');
+  console.error('[v0] Checked:', possiblePaths);
   process.exit(1);
 }
 
-console.log('[v0] Schema found, running prisma generate...');
+console.log('[v0] Using project root:', projectRoot);
+console.log('[v0] Running: npx prisma generate');
 
-// Run prisma generate
-exec('npx prisma generate', { cwd: projectRoot }, (error, stdout, stderr) => {
-  if (error) {
-    console.error('[v0] Error generating Prisma client:', error.message);
-    if (stderr) console.error('[v0] stderr:', stderr);
-    process.exit(1);
-  }
-
-  if (stdout) console.log('[v0]', stdout);
+try {
+  const output = execSync('npx prisma generate', {
+    cwd: projectRoot,
+    encoding: 'utf-8',
+    stdio: 'inherit'
+  });
   
   console.log('[v0] ✓ Prisma client generated successfully');
   process.exit(0);
-});
+} catch (error) {
+  console.error('[v0] Error generating Prisma client:', error.message);
+  process.exit(1);
+}
