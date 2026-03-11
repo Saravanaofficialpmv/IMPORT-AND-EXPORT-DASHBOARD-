@@ -3,11 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { getUserByEmail } from "@/lib/supabase/queries";
 
-// Dynamically set NEXTAUTH_URL for Vercel preview deployments
-if (process.env.VERCEL_URL && !process.env.NEXTAUTH_URL) {
-    process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
-}
-
 export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
