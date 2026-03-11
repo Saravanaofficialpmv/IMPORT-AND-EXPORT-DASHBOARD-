@@ -18,7 +18,6 @@ export default function LoginPage() {
     const { data: session } = useSession();
 
     const handleRedirect = (userRole: string) => {
-        console.log("[v0] Redirecting user with role:", userRole);
         switch (userRole?.toLowerCase()) {
             case "admin":
                 router.push("/dashboard");
@@ -46,24 +45,24 @@ export default function LoginPage() {
         });
 
         if (result?.error) {
-            console.log("[v0] Sign in error:", result.error);
             setError(result.error);
             setLoading(false);
         } else {
-            console.log("[v0] Sign in successful, fetching session...");
-            // Wait a moment for the session to be set
+            // Wait for session to be established
             setTimeout(async () => {
-                // Refresh to get the updated session
-                const res = await fetch("/api/auth/session");
-                const sessionData = await res.json();
-                console.log("[v0] Session data:", sessionData);
-                
-                if (sessionData?.user?.role) {
-                    handleRedirect(sessionData.user.role);
-                } else {
+                try {
+                    const res = await fetch("/api/auth/session");
+                    const sessionData = await res.json();
+                    
+                    if (sessionData?.user?.role) {
+                        handleRedirect(sessionData.user.role);
+                    } else {
+                        router.push("/dashboard");
+                    }
+                } catch (err) {
                     router.push("/dashboard");
                 }
-            }, 500);
+            }, 300);
         }
     };
 
@@ -80,23 +79,24 @@ export default function LoginPage() {
         });
 
         if (result?.error) {
-            console.log("[v0] Demo sign in error:", result.error);
             setError(result.error);
             setLoading(false);
         } else {
-            console.log("[v0] Demo sign in successful");
-            // Wait a moment for the session to be set
+            // Wait for session to be established
             setTimeout(async () => {
-                const res = await fetch("/api/auth/session");
-                const sessionData = await res.json();
-                console.log("[v0] Session data:", sessionData);
-                
-                if (sessionData?.user?.role) {
-                    handleRedirect(sessionData.user.role);
-                } else {
+                try {
+                    const res = await fetch("/api/auth/session");
+                    const sessionData = await res.json();
+                    
+                    if (sessionData?.user?.role) {
+                        handleRedirect(sessionData.user.role);
+                    } else {
+                        router.push("/dashboard");
+                    }
+                } catch (err) {
                     router.push("/dashboard");
                 }
-            }, 500);
+            }, 300);
         }
     };
 

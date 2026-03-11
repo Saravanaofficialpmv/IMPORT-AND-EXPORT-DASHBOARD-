@@ -5,9 +5,12 @@ import { NextResponse } from "next/server";
 export async function GET() {
     try {
         const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json(null);
+        }
         return NextResponse.json(session);
     } catch (error) {
         console.error("[v0] Session API error:", error);
-        return NextResponse.json({ error: "Failed to get session" }, { status: 500 });
+        return NextResponse.json(null);
     }
 }
