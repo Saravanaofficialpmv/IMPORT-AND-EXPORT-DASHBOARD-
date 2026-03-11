@@ -1,7 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import prisma from "@/lib/prisma";
+import { getUserByEmail } from "@/lib/supabase/queries";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -16,9 +16,7 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Please provide email and password");
                 }
 
-                const user = await prisma.user.findUnique({
-                    where: { email: credentials.email },
-                });
+                const user = await getUserByEmail(credentials.email);
 
                 if (!user) {
                     throw new Error("No user found with this email");

@@ -1,17 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
     try {
-        const trips = await prisma.trip.findMany({
-            orderBy: { createdAt: "desc" },
-            include: {
-                vehicle: { select: { vehicleNumber: true } },
-                driver: { select: { name: true } },
-                manager: { select: { name: true } },
-                _count: { select: { alerts: true } },
-            },
-        });
+        const supabase = await createClient();
+        const { data: trips, error } = await supabase
+            .from("trips")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+        if (error) throw error;
         return NextResponse.json(trips);
     } catch (error) {
         console.error("Trips GET error:", error);
@@ -21,24 +19,31 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
     try {
+        const supabase = await createClient();
         const body = await req.json();
-        const trip = await prisma.trip.create({
-            data: {
-                origin: body.origin,
-                destination: body.destination,
-                originLat: body.originLat || 0,
-                originLng: body.originLng || 0,
-                destLat: body.destLat || 0,
-                destLng: body.destLng || 0,
-                cargo: body.cargo,
-                permitId: body.permitId,
-                allowedTrips: body.allowedTrips || 1,
-                status: "PENDING",
-                vehicleId: body.vehicleId,
-                driverId: body.driverId,
-                managerId: body.managerId,
-            },
-        });
+        const { data: trip, error } = await supabase
+            .from("trips")
+            .insert([
+                {
+                    origin: body.origin,
+                    destination: body.destination,
+                    origin_lat: body.originLat || 0,
+                    origin_lng: body.originLng || 0,
+                    dest_lat: body.destLat || 0,
+                    dest_lng: body.destLng || 0,
+                    cargo: body.cargo,
+                    permit_id: body.permitId,
+                    allowed_trips: body.allowedTrips || 1,
+                    status: "PENDING",
+                    vehicle_id: body.vehicleId,
+                    driver_id: body.driverId,
+                    manager_id: body.managerId,
+                },
+            ])
+            .select()
+            .single();
+
+        if (error) throw error;
         return NextResponse.json(trip, { status: 201 });
     } catch (error) {
         console.error("Trips POST error:", error);

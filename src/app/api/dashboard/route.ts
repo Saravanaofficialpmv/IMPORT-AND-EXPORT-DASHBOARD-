@@ -1,28 +1,25 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
     try {
-        const [totalVehicles, activeTrips, completedTrips, violations, alerts, vehicles] =
-            await Promise.all([
-                prisma.vehicle.count(),
-                prisma.trip.count({ where: { status: "ACTIVE" } }),
-                prisma.trip.count({ where: { status: "COMPLETED" } }),
-                prisma.alert.count({ where: { resolved: false } }),
-                prisma.alert.findMany({
-                    orderBy: { createdAt: "desc" },
-                    take: 10,
-                    include: { vehicle: { select: { vehicleNumber: true } } },
-                }),
-                prisma.vehicle.findMany({
-                    include: {
-                        locations: {
-                            orderBy: { timestamp: "desc" },
-                            take: 1,
-                        },
-                    },
-                }),
-            ]);
+        const supabase = await createClient();
+
+        const [
+            { count: totalVehicles },
+            { count: activeTrips },
+            { count: completedTrips },
+            { count: violations },
+            { data: alerts },
+            { data: vehicles },
+        ] = await Promise.all([
+            supabase.from("vehicles").select("*", { count: "exact", head: true }),
+            supabase.from("trips").select("*", { count: "exact", head: true }).eq("status", "ACTIVE"),
+            supabase.from("trips").select("*", { count: "exact", head: true }).eq("status", "COMPLETED"),
+            supabase.from("alerts").select("*", { count: "exact", head: true }).eq("resolved", false),
+            supabase.from("alerts").select("*").order("created_at", { ascending: false }).limit(10),
+            supabase.from("vehicles").select("*"),
+        ]);
 
         return NextResponse.json({
             totalVehicles,
